@@ -1,0 +1,149 @@
+@import './root.css';
+@import './base.css';
+
+
+.message-container {
+  min-height: 40px;
+  padding: 10px;
+  display: flex;
+  align-content: center;
+  align-items: center;
+}
+
+.success,
+.error,
+.info,
+.warning,
+.errorIndex {
+  z-index: 9999;
+  /* font-size: 16px; */
+  /* padding: 10px; */
+}
+
+.error {
+  /* background-color: rgba(221, 38, 38, 0.3); */
+  color: rgb(255, 47, 47);
+}
+
+.success {
+  /* background-color: rgba(18, 225, 18, 0.3); */
+  color: greenyellow;
+}
+
+.info {
+  /* background-color: rgba(7, 171, 226, 0.3); */
+  color: #0ab8ff;
+}
+
+.warning {
+  /* background-color: rgba(226, 211, 7, 0.3); */
+  color: rgb(255, 170, 0);
+}
+
+
+
+.w30p{
+  width: 140px;
+}
+
+.w1 {
+  margin: 10px;
+  padding: 10px;
+  background-color: rgba(0, 0, 0, 0.7);
+}
+.fx{
+  display: flex;
+}
+
+.btn-span{
+  transition: 200ms;
+  cursor: pointer;
+}
+
+.btn-span:hover{
+  color: rgb(12, 205, 227);
+}
+.btn-1{
+  background-color: rgba(0, 0, 0, 0.7);
+  padding: 10px 40px 10px 40px;
+  box-shadow: 0 0 10px black;
+  border: 1px solid rgba(26, 77, 94, 0.8);
+  /* width: 200px; */
+  text-align: center;
+  margin: 2px 0px 2px 0px;
+}
+.ct {
+  display: flex;
+  align-content: center;
+  justify-content: center;
+  align-items: center;
+}
+
+
+.mega-button {
+  background: transparent;
+  font-size: 16px;
+  font-weight: bold;
+  color: var(--font-color);
+  border: none;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.mega-button:hover {
+  color: orange;
+  animation: buttonPulse 0.5s infinite alternate;
+}
+
+.btn-pulse{
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  background: transparent;
+  color: rgb(0, 255, 247);
+  animation: buttonPulse 0.5s infinite alternate;
+  transition: 0.3s;
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg); /* Początkowy kąt obrotu */
+  }
+  100% {
+    transform: rotate(360deg); /* Końcowy kąt obrotu */
+  }
+}
+
+@keyframes buttonPulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Dostosowanie wyglądu paska przewijania dla przeglądarek opartych na silniku Chromium */
+::-webkit-scrollbar {
+  width: 8px;
+  /* Szerokość paska przewijania */
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-background);
+  /* Kolor tła ścieżki przewijania */
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  /* Kolor samego paska przewijania */
+  /* border-radius: 0px; /* Zaokrąglenie rogów paska przewijania */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+  /* Kolor paska przewijania po najechaniu myszką */
+}

@@ -1,0 +1,93 @@
+{
+  "main": {
+    "loginLabel": "Zaloguj się",
+    "registerLabel": "Rejestracja",
+    "joinUs": "Dołącz do nas"
+  },
+  "login": {
+    "loginButton": "Zaloguj",
+    "resetPasswordLink": "Zresetuj hasło",
+    "backToLogin": "Wróć",
+    "login": "Logowanie",
+    "noAccount": "Nie masz konta?"
+  },
+  "changeEmail": {
+    "info": "Na twój adres Email został wysłany kod, przepisz go tutaj."
+  },
+    "settings": {
+    "language": "Język",
+    "changePassword": "Zmień hasło",
+    "changeEmail": "Aktualizuj Email",
+    "languageSettings": "Ustawienia języka"
+  },
+  "logout": {
+    "logoutButton": "Wyloguj",
+    "confirmButton": "YEAAA",
+    "cancelButton": "NIEE ZOSTAJE!",
+    "confirmMessage": "Wylogować?"
+  },
+  "registration": {
+    "title": "Rejestracja",
+    "registration": "Zarejestruj"
+  },
+  "global": {
+    "submit": "Wyslij",
+    "backToMain": "Wróć do strony głownej",
+    "chooseLanguage": "Wybierz język",
+    "emailLabel": "E-mail",
+    "passwordLabel": "Hasło",
+    "confirmPasswordLabel": "Powtórz hasło",
+    "registrationButton": "Rejestracja",
+    "or": "LUB"
+  },
+  "forgotPassword": {
+    "title": "Przypomnij hasło"
+  },
+  "password": {
+    "title": "Reset hasła",
+    "currentPassword": "Obecne hasło",
+    "newPassword": "Nowe hasło",
+    "confirmNewPassword": "Powtórz nowe hasło",
+    "code": "Wpisz kod"
+  },
+  "cookie": {
+    "title": "Polityka prywatności i wykorzystanie danych"
+  },
+  "contact": {
+    "contact": "Kontakt",
+    "message": "Wiadomość",
+    "subject": "Temat",
+    "general_inquiry": "Ogólne zapytanie",
+    "technical_support": "Wsparcie techniczne",
+    "feedback": "Opinia",
+    "sponsors": "Sponsoring",
+    "other": "Inne",
+    "selectOption": "Wybierz temat",
+    "InvalidemailAddress": "Niepoprawny adres E-mail.",
+    "PleaseSelectASubject": "Wybierz temat",
+    "PleaseEnterAMessage": "Wpisz wiadomość",
+    "alert_successMessage": "Wiadomość została wysłana pomyślnie"
+  },
+  "captcha": {
+    "title": "Captcha",
+    "refreshCaptcha": "Odśwież",
+    "captchaLabel": "Przepisz kod z obrazka",
+    "invalidCaptcha": "Nieprawidłowy kod",
+    "placeholder": "Przepisz kod z obrazka"
+  },
+  "calendar":{
+    "Sunday": "Niedziela",
+    "Saturday": "Sobota",
+    "Friday": "Piątek",
+    "Thursday": "Czwartek",
+    "Wednesday": "Środa",
+    "Tuesday": "Wtorek",
+    "Monday": "Poniedziałek"
+  },
+  "admin":{
+    "employee" : "Pracownicy",
+    "addEmployee" : "Dodaj pracownika",
+    "showEmployee" : "Szukaj pracownika",
+    "settings": "Ustawienia"
+  }
+}

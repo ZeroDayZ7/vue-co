@@ -1,0 +1,82 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  position: relative;
+  font-weight: normal;
+}
+
+input, button, select{
+  padding: 8px;
+  border-radius: 3px;
+}
+
+input, button, select, textarea{
+  outline: none;
+  background-color: var(--RGBA-BLACK-50);
+  border: 1px solid var(--RGBA-WHITE-50);
+  color: var(--white);
+}
+
+/* Autocomplete */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active  {
+  -webkit-text-fill-color: var(--white);
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Ukryj strzałki w Chrome, Safari, Edge, Opera */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Ukryj strzałki w Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+html{
+  /* user-select: none; */
+}
+#app{
+  height: 100%;
+  display: flex;
+  /* overflow-y: scroll; */
+}
+html, body{
+  /* height: 100vh; */
+  height: 100%;
+}
+
+body {
+  scrollbar-color: rgb(62, 65, 68) rgb(22, 24, 28);
+  color: var(--font-color);
+  background: var(--color-background);
+
+  font-family: monospace;
+  font-size: 12px;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+a{
+  color: white;
+  transition: 200ms;
+  text-decoration: none;
+}
+a:hover{
+  color: var(--colorSky);
+}
+
+button{
+  cursor: pointer;
+}
+
+button[disabled] {
+  cursor: not-allowed;
+}

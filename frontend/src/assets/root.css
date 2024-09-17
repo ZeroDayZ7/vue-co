@@ -1,0 +1,23 @@
+  
+  :root {
+    --color-background: #141414;
+    --font-color: white; 
+    --primary: #256273;
+    --box-shadow:var(--primary);
+    --font-color-active: #25cece;
+    --font-color-hover: #43b2c1;
+
+    --primary-transparent: rgba(37, 98, 115, 0.9);
+    
+    --primary-color:#ffffff;
+
+    --colorSky: rgb(12, 205, 227);
+    --RGBA-WHITE-50: rgba(255, 255, 255, 0.5);
+    --RGBA-BLACK-50: rgba(0, 0, 0, 0.5);
+    --RGBA-BLACK-90: rgba(0, 0, 0, 0.9);
+    --RGBA-BLACK-100: rgba(0, 0, 0, 1);
+    --white: rgb(255, 255, 255);
+    --black: rgb(0,0,0);
+    --TRANSITION: 300ms;
+  }
+  
