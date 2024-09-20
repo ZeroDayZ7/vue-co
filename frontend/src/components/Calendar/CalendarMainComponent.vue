@@ -204,7 +204,7 @@ const closeModal = () => {
 }
 
 .modal-content {
-  /* background: #fff; */
+  background: #686868;
   padding: 20px;
   border-radius: 5px;
   max-width: 500px;
@@ -218,6 +218,6 @@ const closeModal = () => {
 
 /* Efekt hover - zmiana koloru tła */
 .day-cell:hover {
-  border: 2px solid yellowgreen;
+  box-shadow: 1px 1px 1px 1px yellowgreen;
 }
 </style>
