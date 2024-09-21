@@ -176,10 +176,10 @@ router.beforeEach((to, from, next) => {
     const userRole = store.state.userRole;
 
     if (!userRole) {
-      console.log('Rola nie jest ustawiona, pobieranie roli użytkownika...');
+      // console.log('Rola nie jest ustawiona, pobieranie roli użytkownika...');
       store.dispatch('fetchUserRole');
     } else {
-      console.log('Rola jest już ustawiona:', userRole);
+      // console.log('Rola jest już ustawiona:', userRole);
     }
   }
 

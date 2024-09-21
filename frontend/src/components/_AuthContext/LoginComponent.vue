@@ -49,7 +49,7 @@ if (import.meta.env.MODE === 'production') {
 } else {
   email.value = 'yovasec567@fincainc.com';
   password.value = 'Zaq1@wsx';
-  console.log('To jest wersja deweloperska lub testowa.');
+  console.log('To jest wersja testowa.');
 }
 
 const submitForm = async () => {

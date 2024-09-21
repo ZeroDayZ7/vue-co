@@ -8,9 +8,7 @@ const crypto = require('crypto');
 const cookieParser = require('cookie-parser');
 const logger = require('./tools/logger');
 
-
 const app = express();
-const PORT = process.env.PORT;
 const { consoleLogRequest } = require('./tools/tools');
 
 const registrationEndpoint = require('./endpoints/registrationEndpoint');
@@ -54,6 +52,6 @@ app.get('*', (req, res) => {
 });
 
 // Nasłuchiwanie na określonym porcie
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+app.listen(process.env.PORT, () => {
+  console.log(`Server running on port ${process.env.PORT}`);
 });

@@ -1,7 +1,20 @@
 const express = require('express');
 const db = require('../db');
 const bcrypt = require('bcrypt');
+const rateLimit = require('express-rate-limit');
 const logger = require('../tools/logger')
+
+// Ustaw limit dla prób logowania
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minut
+  max: 5, // Maksymalnie 5 prób logowania
+  handler: (req, res) => {
+    res.status(429).json({
+      code: 'Zbyt wiele nieudanych prób logowania. Spróbuj ponownie później.',
+      message: 'Zbyt wiele nieudanych prób logowania. Spróbuj ponownie później.',
+    });
+  },
+});
 
 const { i18n } = require('../language/i18nSetup');
 
@@ -16,14 +29,11 @@ const router = express.Router();
 // ==========================================================================
 // Logowanie
 // ==========================================================================
-router.post('/api/login', async (req, res) => {
+router.post('/api/login', loginLimiter, async (req, res) => {
   const { email, password } = req.body;
   const userIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 
   try {
-    // =======================================================================
-    // Sprawdzenie czy email lub hasło nie jest puste
-    // =======================================================================
     if (!email || !password) {
       return res.status(400).json({
         messages: 'error',
@@ -31,79 +41,22 @@ router.post('/api/login', async (req, res) => {
         code: `${i18n.__('LOGIN.INCOMPLETE_DATA')}`,
       });
     }
-    // =======================================================================
-    // Sprawdzenie czy użytkownik istnieje
-    // =======================================================================
+
     const userDetails = await checkUserDetails(email);
-
-    if (!userDetails) {
+    if (!userDetails || userDetails.userBlock === 1 || !userDetails.isActivationTokenNull) {
       return res.status(400).json({
         messages: 'error',
         isLoggedIn: false,
-        code: `${i18n.__('LOGIN.WRONG_DATA')}`,
-      });
-    }
-    // =======================================================================
-    // Sprawdzenie czy użytkownik jest zablokowany
-    // =======================================================================
-    if (userDetails.userBlock === 1) {
-      return res.status(400).json({
-        messages: 'error',
-        isLoggedIn: false,
-        code: `${i18n.__('LOGIN.USER_BLOCKED')}`,
-      });
-    }
-    // =======================================================================
-    // Sprawdzenie czy użytkownik ma aktywne konto
-    // =======================================================================
-    if (userDetails.isActivationTokenNull === false) {
-      return res.status(400).json({
-        messages: 'info',
-        isLoggedIn: false,
-        code: `${i18n.__('LOGIN.ACCOUNT_ACTIVATE_FALSE')}`,
+        code: userDetails ? (userDetails.userBlock ? `${i18n.__('LOGIN.USER_BLOCKED')}` : `${i18n.__('LOGIN.ACCOUNT_ACTIVATE_FALSE')}`) : `${i18n.__('LOGIN.WRONG_DATA')}`,
       });
     }
 
-    if(!userDetails.lastLoginIp === userIp){
-      const lastIP = await updateLastLoginIp(email, userIp);
+    if (userDetails.lastLoginIp !== userIp) {
+      await updateLastLoginIp(email, userIp);
     }
-     
 
-
-     // =======================================================================
-    // Sprawdzenie liczby prób logowania
-    // =======================================================================
-    // if (userDetails.loginAttempts >= 3) {
-    //   const timeSinceLastAttempt = Date.now() - new Date(userDetails.lastLoginAttempt).getTime();
-    //   const blockTime = 15 * 60 * 1000; // 15 minut w milisekundach
-
-    //   if (timeSinceLastAttempt < blockTime) {
-    //     return res.status(403).json({
-    //       message: 'Zbyt wiele nieudanych prób logowania. Spróbuj ponownie później.',
-    //       messages: 'error',
-    //       success: true,
-    //       isLoggedIn: false,
-    //       code: `${i18n.__('LOGIN.TOO_MANY_ATTEMPTS')}`,
-    //       retryAfter: blockTime - timeSinceLastAttempt, // Czas do ponownej próby
-    //     });
-    //   } else {
-    //     // Resetowanie liczby prób po upływie czasu blokady
-    //     await resetLoginAttempts(email);
-    //   }
-    // }
-
-
-    // =======================================================================
-    // Pobieranie ids, email, hasło
-    // =======================================================================
-   
-    
-     const user = await getUserByEmail(email);
-    //  console.log('EE' + JSON.stringify(user));
-    //  return;
-
+    const user = await getUserByEmail(email);
     const isPasswordValid = await bcrypt.compare(password, user.pass);
-
     if (!isPasswordValid) {
       return res.status(400).json({
         messages: 'error',
@@ -111,10 +64,8 @@ router.post('/api/login', async (req, res) => {
         code: `${i18n.__('LOGIN.WRONG_DATA')}`,
       });
     }
-    console.log(`X: ${JSON.stringify(user)}`);
 
     const token = await generateAccessToken(user.ids, user.role);
-
     if (!token) {
       return res.status(400).json({
         messages: 'error',
@@ -123,58 +74,27 @@ router.post('/api/login', async (req, res) => {
       });
     }
 
-    const isupdateLoginCount = await updateLoginCount(email);
+    await updateLoginCount(email);
+    req.session.userId = user.ids;
 
-    if (!isupdateLoginCount) {
-      return res.status(400).json({
-        messages: 'error',
-        isLoggedIn: false,
-        code: `${i18n.__('LOGIN.WRONG_DATA')}`,
+    req.session.save(err => {
+      if (err) {
+        console.error('Błąd podczas zapisywania sesji:', err);
+        return res.status(500).json({ error: 'Błąd logowania' });
+      }
+
+      res.cookie(process.env.AT_NAME, token.accessToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        maxAge: parseInt(process.env.C_MAX_AGE, 10),
+        sameSite: false,
       });
-    }
-  // =======================================================================
-  // Pomyślne logowanie
-  // =======================================================================
-  // console.log('Ustawiono ciasteczko:', req.cookies);
-  req.session.userId = user.ids; // Zapisz ID użytkownika w sesji
-  req.session.save((err) => {
-    if (err) {
-      console.error('Błąd podczas zapisywania sesji:', err);
-      serverLogs(`Błąd podczas zapisywania sesji: ${err}`);
-      return res.status(500).json({ error: 'Błąd logowania' });
-    }
-    res.json({ success: true, message: 'Zalogowano pomyślnie' });
-  });
 
-  res.cookie(process.env.AT_NAME, token.accessToken, {
-    httpOnly: true,
-    // sameSite: process.env.C_SAMESITE,
-    secure: process.env.C_SECURE === 'true', // Upewnij się, że wartość jest logiczna
-    maxAge: parseInt(process.env.C_MAX_AGE, 10), // Upewnij się, że wartość jest liczbą
-  });
-  
-  // res.cookie(process.env.ST_NAME, token.sessionToken, {
-  //   httpOnly: false,
-  //   // sameSite: process.env.C_SAMESITE,
-  //   secure: process.env.C_SECURE === 'true', // Upewnij się, że wartość jest logiczna
-  //   maxAge: parseInt(process.env.C_MAX_AGE, 10), // Upewnij się, że wartość jest liczbą
-  // });
-  
-  // console.log('Ustawiam ciasteczka:', {
-  //   accessToken: token.accessToken,
-  //   sessionToken: token.sessionToken,
-  //   httpOnly: true,
-  //   secure: process.env.C_SECURE,
-  //   maxAge: process.env.C_MAX_AGE,
-  // });
-  
-  console.log('Ustawiono ciasteczko:', req.cookies);
-   
-
-    return res.status(200).json({
-      message: 'Logowanie przebiegło pomyślnie',
-      isLoggedIn: true,
-      role: 'admin',
+      return res.status(200).json({
+        message: 'Logowanie przebiegło pomyślnie',
+        isLoggedIn: true,
+        role: 'admin',
+      });
     });
   } catch (error) {
     return res.status(500).json({
@@ -185,6 +105,7 @@ router.post('/api/login', async (req, res) => {
     });
   }
 });
+
 // ==============================================================================
 // Logout
 // ==============================================================================

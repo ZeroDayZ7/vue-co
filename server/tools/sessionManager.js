@@ -6,8 +6,8 @@ const db = require('../db');
 
 // Opcje sesji
 const sessionOptions = {
-  checkExpirationInterval: 900000, // Czas w milisekundach między sprawdzeniami wygasłych sesji
-  expiration: 86400000, // Czas wygaśnięcia sesji w milisekundach
+  checkExpirationInterval: 10000, // Czas w milisekundach między sprawdzeniami wygasłych sesji
+  expiration: 3600000, // Czas wygaśnięcia sesji w milisekundach
   schema: {
     tableName: 'sessions_store', // Nazwa tabeli
     columnNames: {
@@ -29,16 +29,19 @@ const sessionStore = new MySQLStore(sessionOptions, db, (error) =>{
 // Middleware session
 const sessionMiddleware = session({
   store: sessionStore,
-  secret: process.env.SESSION_KEY,
-  resave: false, //resave jest ustawione na true, jeśli chcesz, aby sesja była zawsze zapisywana, nawet jeśli nie została zmodyfikowana:
-  saveUninitialized: false,
-  rolling: true, // Włączenie automatycznego odświeżania sesji
-  name: process.env.SESSION_NAME, // Nazwa sesji
+  secret: process.env.SESSION_KEY || 'default_secret', // Dodanie domyślnej wartości dla bezpieczeństwa
+  resave: false, // Ustawienie na false, aby nie zapisywać sesji bez zmian
+  saveUninitialized: false, // Nie zapisuj sesji, jeśli nie została zainicjalizowana
+  rolling: false, // Automatyczne odświeżanie sesji
+  name: process.env.SESSION_NAME || 'default_session_name', // Dodanie domyślnej nazwy sesji
   cookie: {
-    maxAge: parseInt(process.env.C_MAX_AGE), // Czas trwania sesji (w milisekundach)
-    secure: process.env.C_SECURE, // Ustaw na true, jeśli używasz HTTPS
-    httpOnly: true, // Ustawienie httpOnly na false
-    samesite: 'strict',
+    maxAge: Number(process.env.C_MAX_AGE) || 900000, // Domyślny czas trwania sesji 15 minut
+    secure: process.env.NODE_ENV === "production", // Ustaw na true, jeśli używasz HTTPS
+    httpOnly: true, // Ustawienie httpOnly na true dla bezpieczeństwa
+    sameSite: false,
+    // sameSite: 'strict', // Ograniczenie ciasteczek do tej samej witryny
+    // sameSite: 'lax', // Ograniczenie ciasteczek do tej samej witryny
+    // sameSite: 'None', // Najmniej restrykcyjne, przesyła ciasteczka we wszystkich żądaniach (wymaga HTTPS).
   }
 });
 

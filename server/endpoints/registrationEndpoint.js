@@ -71,7 +71,6 @@ router.post('/api/set-new-password', async (req, res) => {
     });
   } catch (error) {
     console.error('Error setting new password:', error);
-    server_logs(`${error}`);
     return res.status(500).json({
       message: 'Wystąpił błąd wewnętrzny serwera',
       success: true,
@@ -152,7 +151,6 @@ router.post('/reset-password', async (req, res) => {
     });
   } catch (error) {
     console.error('Error resetting password:', error);
-    server_logs(`${error}`);
     res.status(500).json({
       message: 'Wystąpił błąd wewnętrzny serwera',
       success: true,
@@ -230,7 +228,6 @@ router.post('/api/forgot-password', async (req, res) => {
       });
   } catch (error) {
     console.error('Błąd podczas przetwarzania żądania przypomnienia hasła:', error);
-    server_logs(`${error}`);
     res.status(500).json({
       message: `Wystąpił błąd podczas przetwarzania żądania przypomnienia hasła.`,
       success: false,
@@ -331,7 +328,6 @@ router.post('/api/registration', async (req, res) => {
       });
     });
   } catch (error) {
-    server_logs(`${error}`);
     return res.status(500).json({
       message: `Błąd podczas rejestracji`,
       messages: `error`,
