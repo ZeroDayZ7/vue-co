@@ -37,9 +37,7 @@ const store = createStore({
   },
   getters: {
     isAuthenticated(state) {
-      const sessionToken = Cookies.get(import.meta.env.VITE_SESSION_KEY);
       return state.isAuthenticated; // Użyj stanu zamiast cookies
-      // return sessionToken !== null || sessionToken !== undefined; // Użyj stanu zamiast cookies
     },
     getUserRole(state) {
       return state.userRole;
@@ -62,7 +60,7 @@ const store = createStore({
         if (data.isLoggedIn) {
           commit('setAuthenticated', true);
           commit('setUserRole', data.role);
-        }else{
+        } else {
           commit('setAuthenticated', false);
         }
       } catch (error) {
@@ -76,6 +74,26 @@ const store = createStore({
         return;       
       } catch (error) {
         console.error('Błąd podczas pobierania roli użytkownika:', error);
+      }
+    },
+    async checkUser({ commit }) {
+      try {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/check-user`, {
+          method: 'GET',
+          credentials: 'include'
+        });
+        const data = await response.json();
+
+        if (data.isLoggedIn) {
+          commit('setAuthenticated', true);
+          commit('setUser', data.user);
+          commit('setUserRole', data.role);
+        } else {
+          commit('setAuthenticated', false);
+          commit('clearUser');
+        }
+      } catch (error) {
+        console.error('Błąd podczas sprawdzania użytkownika:', error);
       }
     }
   },
