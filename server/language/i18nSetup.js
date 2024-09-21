@@ -20,7 +20,7 @@ function setLocale(req, res, next) {
       i18n.setLocale(locale);
     }
   }
-  console.log(`next(i18n)`);
+  console.log(`= 7 => next(i18n)`);
   next();
 }
 

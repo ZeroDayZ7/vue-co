@@ -38,8 +38,8 @@ const store = createStore({
   getters: {
     isAuthenticated(state) {
       const sessionToken = Cookies.get(import.meta.env.VITE_SESSION_KEY);
-      // return state.isAuthenticated; // Użyj stanu zamiast cookies
-      return sessionToken !== null || sessionToken !== undefined; // Użyj stanu zamiast cookies
+      return state.isAuthenticated; // Użyj stanu zamiast cookies
+      // return sessionToken !== null || sessionToken !== undefined; // Użyj stanu zamiast cookies
     },
     getUserRole(state) {
       return state.userRole;

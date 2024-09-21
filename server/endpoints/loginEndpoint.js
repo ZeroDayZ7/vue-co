@@ -1,6 +1,7 @@
 const express = require('express');
 const db = require('../db');
 const bcrypt = require('bcrypt');
+const logger = require('../tools/logger')
 
 const { i18n } = require('../language/i18nSetup');
 
@@ -98,6 +99,8 @@ router.post('/api/login', async (req, res) => {
    
     
      const user = await getUserByEmail(email);
+    //  console.log('EE' + JSON.stringify(user));
+    //  return;
 
     const isPasswordValid = await bcrypt.compare(password, user.pass);
 
@@ -133,6 +136,16 @@ router.post('/api/login', async (req, res) => {
   // Pomyślne logowanie
   // =======================================================================
   // console.log('Ustawiono ciasteczko:', req.cookies);
+  req.session.userId = user.ids; // Zapisz ID użytkownika w sesji
+  req.session.save((err) => {
+    if (err) {
+      console.error('Błąd podczas zapisywania sesji:', err);
+      serverLogs(`Błąd podczas zapisywania sesji: ${err}`);
+      return res.status(500).json({ error: 'Błąd logowania' });
+    }
+    res.json({ success: true, message: 'Zalogowano pomyślnie' });
+  });
+
   res.cookie(process.env.AT_NAME, token.accessToken, {
     httpOnly: true,
     // sameSite: process.env.C_SAMESITE,
@@ -140,22 +153,22 @@ router.post('/api/login', async (req, res) => {
     maxAge: parseInt(process.env.C_MAX_AGE, 10), // Upewnij się, że wartość jest liczbą
   });
   
-  res.cookie(process.env.ST_NAME, token.sessionToken, {
-    httpOnly: false,
-    // sameSite: process.env.C_SAMESITE,
-    secure: process.env.C_SECURE === 'true', // Upewnij się, że wartość jest logiczna
-    maxAge: parseInt(process.env.C_MAX_AGE, 10), // Upewnij się, że wartość jest liczbą
-  });
+  // res.cookie(process.env.ST_NAME, token.sessionToken, {
+  //   httpOnly: false,
+  //   // sameSite: process.env.C_SAMESITE,
+  //   secure: process.env.C_SECURE === 'true', // Upewnij się, że wartość jest logiczna
+  //   maxAge: parseInt(process.env.C_MAX_AGE, 10), // Upewnij się, że wartość jest liczbą
+  // });
   
-  console.log('Ustawiam ciasteczka:', {
-    accessToken: token.accessToken,
-    sessionToken: token.sessionToken,
-    httpOnly: true,
-    secure: process.env.C_SECURE,
-    maxAge: process.env.C_MAX_AGE,
-  });
+  // console.log('Ustawiam ciasteczka:', {
+  //   accessToken: token.accessToken,
+  //   sessionToken: token.sessionToken,
+  //   httpOnly: true,
+  //   secure: process.env.C_SECURE,
+  //   maxAge: process.env.C_MAX_AGE,
+  // });
   
-  // console.log('Ustawiono ciasteczko:', req.cookies);
+  console.log('Ustawiono ciasteczko:', req.cookies);
    
 
     return res.status(200).json({
