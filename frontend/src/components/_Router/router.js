@@ -20,6 +20,8 @@ import HarmonogramPanel from '../Game/Harmonogram/HarmonogramPanel.vue';
 import AddEmployee from '../Game/Admin/Core/addEmployee.vue';
 import ShowEmployee from '../Game/Admin/Core/showEmployee.vue';
 import SettingsComponent from '../Game/Settings/SettingsComponent.vue';
+import NotFound from '../NotFound.vue';
+
 
 const router = createRouter({
   history: createWebHistory(),
@@ -38,7 +40,8 @@ const router = createRouter({
       redirect: '/login', // Przekierowuje na /login
       meta: { requiresAuth: false }, // Nie wymaga autoryzacji
     },
-
+    { path: '/:catchAll(.*)', component: NotFound },
+    // { path: '*', component: NotFound },
     {
       path: '/login',
       name: 'login',
@@ -169,34 +172,37 @@ const router = createRouter({
 });
 
 // Globalna funkcja middleware sprawdzająca autoryzację użytkownika
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const isAuthenticated = store.getters.isAuthenticated;
+  console.log(`isAU: ${isAuthenticated}`);
 
-  if (isAuthenticated) {
-    const userRole = store.state.userRole;
+  // Jeśli użytkownik nie jest uwierzytelniony, sprawdź jego status
+  if (!isAuthenticated) {
+    await store.dispatch('checkUser');
+  }
 
-    if (!userRole) {
-      // console.log('Rola nie jest ustawiona, pobieranie roli użytkownika...');
-      store.dispatch('fetchUserRole');
-    } else {
-      // console.log('Rola jest już ustawiona:', userRole);
-    }
+  // Sprawdź ponownie isAuthenticated po dispatch
+  const updatedIsAuthenticated = store.getters.isAuthenticated;
+  console.log(`Updated isAU: ${updatedIsAuthenticated}`);
+
+  const userRole = store.state.userRole;
+
+  // Jeśli nie ma roli, pobierz ją
+  if (!userRole && (!isAuthenticated || !updatedIsAuthenticated)) {
+    console.log('Rola nie jest ustawiona, pobieranie roli użytkownika...');
+    await store.dispatch('fetchUserRole'); // Użyj await, aby upewnić się, że rola jest pobierana przed dalszym działaniem
   }
 
   if (to.path === '/') {
-    // Jeśli użytkownik jest zalogowany, przekieruj do '/main', w przeciwnym razie do '/login'
-    next(isAuthenticated ? '/main' : '/login');
-    return;
-  }
-
-  if (to.meta.requiresAuth && !isAuthenticated) {
-    // Jeśli użytkownik próbuje uzyskać dostęp do chronionej ścieżki i nie jest zalogowany, przekierowujemy go na stronę logowania
+    // Przekierowanie do '/main' lub '/login'
+    next((isAuthenticated || updatedIsAuthenticated) ? '/main' : '/login');
+  } else if (to.meta.requiresAuth && !updatedIsAuthenticated) {
+    // Przekierowanie na stronę logowania, jeśli użytkownik próbuje uzyskać dostęp do chronionej ścieżki
     next('/login');
-    return;
-  }else{
-    next();
+  } else {
+    next(); // Jeśli nic nie blokuje, przejdź do następnej trasy
   }
-
 });
+
 
 export default router;

@@ -9,10 +9,6 @@ export async function fetchUserRoleFromAPI() {
       },
     });
 
-    // if (!response.ok) {
-    //   throw new Error('Błąd przy pobieraniu roli użytkownika');
-    // }
-
     const data = await response.json();
 
     return data.role; // Zwracamy rolę użytkownika

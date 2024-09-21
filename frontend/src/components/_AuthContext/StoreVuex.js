@@ -44,6 +44,9 @@ const store = createStore({
     },
   },
   actions: {
+    // ============================================================
+    // LOGOWANIE
+    // ============================================================
     async login({ commit }, { email, password }) {
       try {
         const response = await fetch(`${import.meta.env.VITE_API_URL}/api/login`, {
@@ -67,6 +70,9 @@ const store = createStore({
         console.error('Błąd logowania:', error);
       }
     },
+    // ============================================================
+    // LOGOWANIE
+    // ============================================================
     async fetchUserRole({ commit }) {
       try {
         const role = await fetchUserRoleFromAPI();
@@ -76,6 +82,9 @@ const store = createStore({
         console.error('Błąd podczas pobierania roli użytkownika:', error);
       }
     },
+    // ============================================================
+    // LOGOWANIE
+    // ============================================================
     async checkUser({ commit }) {
       try {
         const response = await fetch(`${import.meta.env.VITE_API_URL}/api/check-user`, {
